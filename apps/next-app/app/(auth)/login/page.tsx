@@ -5,11 +5,11 @@ import { Separator } from "@/components/ui/separator";
 
 export default function LoginPage() {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background-foreground">
-      <Card className="w-[350px]">
+    <div className="flex items-start justify-center min-h-screen bg-background-foreground pt-20">
+      <Card className="w-[400px]">
         <CardHeader>
-          <CardTitle>Login</CardTitle>
-          <CardDescription>Choose your preferred login method</CardDescription>
+          <CardTitle>Entre na sua conta</CardTitle>
+          <CardDescription>Escolha seu método preferido.</CardDescription>
         </CardHeader>
         <CardContent>
           <LoginForm />

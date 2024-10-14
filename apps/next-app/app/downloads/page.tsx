@@ -1,5 +1,5 @@
 function DownloadsPage() {
-  return <h1>DownloadsPage</h1>;
+  return <h1>Downloads</h1>;
 }
 
 export default DownloadsPage;

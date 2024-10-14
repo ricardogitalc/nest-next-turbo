@@ -8,18 +8,18 @@ import { UserButton } from "./UserButton";
 
 export function NavBar() {
   return (
-    <nav className="flex items-center justify-between p-4 bg-background-primary">
-      <Link href="/" className="flex items-center space-x-2">
-        <LogoIcon />
-      </Link>
-      <div className="flex items-center space-x-4">
-        <ModeToggle />
-        <Link href="/login" className="flex items-center space-x-2">
-          <Button variant="outline" className="bg-blue-600 text-white">
-            Login
-          </Button>
+    <nav className="bg-background border-b border-border flex justify-between items-center p-5 w-full">
+      <div className="flex items-center justify-between w-full max-w-7xl mx-auto">
+        <Link href="/" className="flex items-center space-x-2">
+          <LogoIcon />
         </Link>
-        <UserButton />
+        <div className="flex items-center space-x-4">
+          <ModeToggle />
+          <Link href="/login" className="flex items-center space-x-2">
+            <Button variant="default">Login</Button>
+          </Link>
+          <UserButton />
+        </div>
       </div>
     </nav>
   );

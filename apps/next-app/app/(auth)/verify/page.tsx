@@ -18,7 +18,7 @@ export default function VerifyPage() {
         if (response.ok) {
           setVerificationStatus("success");
           localStorage.setItem("authToken", token);
-          setTimeout(() => router.push("/"), 2000);
+          setTimeout(() => router.push("/"), 3000);
         } else {
           setVerificationStatus("error");
         }
@@ -60,7 +60,7 @@ export default function VerifyPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen">
       <Card className="w-[350px]">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">Verificação de Token</CardTitle>

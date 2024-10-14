@@ -84,7 +84,6 @@ Fluxo de autenticação:
 
 Autenticação:
 
-- Configurar uso do token para autenticar requisições subsequentes.
 - Implementar autenticação com conta Google.
 
 Rotas protegidas:

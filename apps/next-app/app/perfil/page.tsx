@@ -1,5 +1,7 @@
+import ProfileForm from "@/components/ProfileForm";
+
 function PerfilPage() {
-  return <h1>PerfilPage</h1>;
+  return <ProfileForm initialData={{ name: "John Doe", email: "john@example.com" }} />;
 }
 
 export default PerfilPage;
