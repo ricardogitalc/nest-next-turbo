@@ -11,12 +11,36 @@
 
 - turborepo para criar um projeto monorepo com dois projetos, um para o front-end e outro para o back-end.
 - para o front-end; next js, react, typescript, tailwindcss, shadcn-ui para componentes, lucid para icones, zod, react-hook-form e etc...
-- para o back-end; nest js, JWT, typescript, prisma ORM com sqlite, class validator e etc...
+- para o back-end; nest js, JWT, typescript, prisma ORM com sqlite, resend para envio de emails, class validator e etc...
 
 # links de referência
 
 nextjs: https://nextjs.org/docs
 nestjs: https://docs.nestjs.com/
+
+# portas
+
+- backend: http://localhost:3001
+- frontend: http://localhost:3000
+
+# schema prisma
+
+datasource db {
+provider = "sqlite"
+url = env("DATABASE_URL")
+}
+
+generator client {
+provider = "prisma-client-js"
+}
+
+model User {
+id Int @id @default(autoincrement())
+email String @unique
+name String?
+createdAt DateTime @default(now())
+updatedAt DateTime @updatedAt
+}
 
 # features do site
 
@@ -28,6 +52,7 @@ nestjs: https://docs.nestjs.com/
 # o que já foi feito
 
 - turborepo adicionado e configurado com nest-api para o backend e next-app para o front-end.
+- prisma configurado, e o prisma service em nest-api.
 
 # features a ser adicionada
 
