@@ -7,6 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class AuthService {
   private resend: Resend;
+  private pendingTokens: Map<string, string> = new Map();
 
   constructor(
     private prisma: PrismaService,
@@ -17,16 +18,9 @@ export class AuthService {
   }
 
   async sendMagicLink(email: string): Promise<void> {
-    let user = await this.prisma.user.findUnique({ where: { email } });
+    const token = this.jwtService.sign({ email }, { expiresIn: '15m' });
+    this.pendingTokens.set(token, email);
 
-    if (!user) {
-      user = await this.prisma.user.create({ data: { email } });
-    }
-
-    const token = this.jwtService.sign(
-      { userId: user.id },
-      { expiresIn: '15m' },
-    );
     const magicLink = `${this.configService.get('FRONTEND_URL')}/auth/verify?token=${token}`;
 
     await this.resend.emails.send({
@@ -40,10 +34,25 @@ export class AuthService {
   async verifyToken(token: string) {
     try {
       const payload = this.jwtService.verify(token);
-      const user = await this.prisma.user.findUnique({
-        where: { id: payload.userId },
-      });
-      return user;
+      const email = this.pendingTokens.get(token);
+
+      if (email && email === payload.email) {
+        this.pendingTokens.delete(token);
+        let user = await this.prisma.user.findUnique({ where: { email } });
+
+        if (!user) {
+          user = await this.prisma.user.create({
+            data: { email, emailVerified: true },
+          });
+        } else if (!user.emailVerified) {
+          user = await this.prisma.user.update({
+            where: { id: user.id },
+            data: { emailVerified: true },
+          });
+        }
+
+        return user;
+      }
     } catch (error) {
       return null;
     }
