@@ -2,6 +2,7 @@
 
 - responder sempre na linguagem português brasileiro
 - seguir etapas passo a passo
+- seguir sempre a ordem lógica para implementar as funcionalidades
 
 # objetivo da aplicação
 
@@ -53,6 +54,12 @@ updatedAt DateTime @updatedAt
 
 - turborepo adicionado e configurado com nest-api para o backend e next-app para o front-end.
 - prisma configurado, e o prisma service em nest-api.
+
+- O magic link está sendo enviado e, se o usuário não existir, ele é criado no banco de dados. O token no link tem um tempo de expiração, garantindo segurança.
+
+- Quando o usuário clica no link, o token é verificado pelo backend. No entanto, ainda não implementamos a lógica para armazenar o token no localStorage após a verificação bem-sucedida. Também não configuramos o uso desse token para autenticar o usuário em requisições subsequentes.
+
+- Esses são os próximos passos lógicos para completar o fluxo de autenticação. Podemos implementar essas funcionalidades para finalizar o processo de autenticação com magic link.
 
 # features a ser adicionada
 

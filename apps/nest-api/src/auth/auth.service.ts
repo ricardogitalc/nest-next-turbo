@@ -21,7 +21,7 @@ export class AuthService {
     const token = this.jwtService.sign({ email }, { expiresIn: '15m' });
     this.pendingTokens.set(token, email);
 
-    const magicLink = `${this.configService.get('FRONTEND_URL')}/auth/verify?token=${token}`;
+    const magicLink = `${this.configService.get('FRONTEND_URL')}/verify?token=${token}`;
 
     await this.resend.emails.send({
       from: this.configService.get('EMAIL_FROM'),
