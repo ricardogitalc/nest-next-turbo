@@ -50,20 +50,61 @@ updatedAt DateTime @updatedAt
 - esse token é usado para acessar as rotas protegidas.
 - uma página para exibir e editar os dados do usuário como nome, sobrenome, email e etc...
 
-# o que já foi feito
+# O que já foi feito
 
-- turborepo adicionado e configurado com nest-api para o backend e next-app para o front-end.
-- prisma configurado, e o prisma service em nest-api.
+- Configuração do projeto:
 
-- O magic link está sendo enviado e, se o usuário não existir, ele é criado no banco de dados. O token no link tem um tempo de expiração, garantindo segurança.
+- Turborepo configurado com nest-api (backend) e next-app (frontend).
+- Prisma configurado com SQLite e PrismaService implementado no backend.
 
-- Quando o usuário clica no link, o token é verificado pelo backend. No entanto, ainda não implementamos a lógica para armazenar o token no localStorage após a verificação bem-sucedida. Também não configuramos o uso desse token para autenticar o usuário em requisições subsequentes.
+Backend (NestJS):
 
-- Esses são os próximos passos lógicos para completar o fluxo de autenticação. Podemos implementar essas funcionalidades para finalizar o processo de autenticação com magic link.
+- Implementação do AuthService para geração e verificação de magic links.
+- Configuração do JWT para geração de tokens.
+- Endpoint para envio de magic link (/auth/login).
+- Endpoint para verificação de token (/auth/verify).
+- Integração com Resend para envio de emails.
+- Configuração de CORS para permitir requisições do frontend.
 
-# features a ser adicionada
+Frontend (Next.js):
 
-- página de login com magic link (usuário recebe um email com um token jwt) e com conta google.
-- caso o usuário não exista, uma conta é criada no banco de dados usando prisma e mongoDB e no caso de usuário existente, é feito o login e o token jwt é armazenado no localStorage.
-- esse token é usado para acessar as rotas protegidas.
-- uma página para exibir e editar os dados do usuário como nome, sobrenome, email e etc...
+- Página de login com formulário para solicitar magic link.
+- Componente LoginForm com lógica de envio de magic link.
+- Página de verificação de token (/auth/verify).
+- Implementação de toast notifications para feedback ao usuário.
+- Estilização usando shadcn/ui e Lucide icons.
+
+Fluxo de autenticação:
+
+- Envio de magic link implementado.
+- Verificação de token no backend.
+- Criação de usuário no banco de dados, se não existir.
+
+# Features a serem adicionadas
+
+Autenticação:
+
+- Configurar uso do token para autenticar requisições subsequentes.
+- Implementar autenticação com conta Google.
+
+Rotas protegidas:
+
+- Criar middleware/guard para proteger rotas que requerem autenticação.
+- Implementar lógica de redirecionamento para login se o usuário não estiver autenticado.
+
+Página de dashboard:
+
+- Criar página de dashboard para usuários autenticados.
+- Exibir informações básicas do usuário.
+
+Página de perfil:
+
+- Implementar página para exibir e editar dados do usuário (nome, sobrenome, email, etc.).
+- Criar formulário de edição de perfil.
+- Implementar endpoints no backend para atualização de dados do usuário.
+
+Funcionalidades principais:
+
+- Implementar sistema de templates para download.
+- Criar página de listagem de templates.
+- Implementar funcionalidade de download de templates.

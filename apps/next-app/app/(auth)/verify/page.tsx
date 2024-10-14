@@ -18,7 +18,7 @@ export default function VerifyPage() {
         if (response.ok) {
           setVerificationStatus("success");
           localStorage.setItem("authToken", token);
-          setTimeout(() => router.push("/dashboard"), 2000);
+          setTimeout(() => router.push("/"), 2000);
         } else {
           setVerificationStatus("error");
         }
