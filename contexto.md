@@ -52,8 +52,6 @@ updatedAt DateTime @updatedAt
 
 # O que já foi feito
 
-- Configuração do projeto:
-
 - Turborepo configurado com nest-api (backend) e next-app (frontend).
 - Prisma configurado com SQLite e PrismaService implementado no backend.
 
@@ -65,6 +63,11 @@ Backend (NestJS):
 - Endpoint para verificação de token (/auth/verify).
 - Integração com Resend para envio de emails.
 - Configuração de CORS para permitir requisições do frontend.
+- Criação do JwtAuthGuard para proteger rotas.
+- Implementação do endpoint /auth/profile para obter dados do usuário autenticado.
+- Configuração do JwtStrategy para autenticação JWT.
+- Criação do arquivo constants.ts para armazenar a chave secreta do JWT.
+- Atualização do AuthModule para incluir as dependências necessárias (PrismaModule, ConfigModule, JwtModule).
 
 Frontend (Next.js):
 
@@ -79,31 +82,6 @@ Fluxo de autenticação:
 - Envio de magic link implementado.
 - Verificação de token no backend.
 - Criação de usuário no banco de dados, se não existir.
+- Armazenamento do token JWT no localStorage após verificação bem-sucedida.
 
 # Features a serem adicionadas
-
-Autenticação:
-
-- Implementar autenticação com conta Google.
-
-Rotas protegidas:
-
-- Criar middleware/guard para proteger rotas que requerem autenticação.
-- Implementar lógica de redirecionamento para login se o usuário não estiver autenticado.
-
-Página de dashboard:
-
-- Criar página de dashboard para usuários autenticados.
-- Exibir informações básicas do usuário.
-
-Página de perfil:
-
-- Implementar página para exibir e editar dados do usuário (nome, sobrenome, email, etc.).
-- Criar formulário de edição de perfil.
-- Implementar endpoints no backend para atualização de dados do usuário.
-
-Funcionalidades principais:
-
-- Implementar sistema de templates para download.
-- Criar página de listagem de templates.
-- Implementar funcionalidade de download de templates.
