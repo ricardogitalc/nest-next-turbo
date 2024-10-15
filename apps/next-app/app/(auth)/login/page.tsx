@@ -1,5 +1,5 @@
+import LoginForm from "@/components/(auth)/LoginForm";
 import GoogleButton from "@/components/GoogleButton";
-import LoginForm from "@/components/LoginForm";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 

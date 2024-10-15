@@ -1,7 +1,5 @@
-import ProfileForm from "@/components/ProfileForm";
+import { ProfileForm } from "@/components/(auth)/ProfileForm";
 
-function PerfilPage() {
-  return <ProfileForm initialData={{ name: "John Doe", email: "john@example.com" }} />;
+export default function ProfilePage() {
+  return <ProfileForm />;
 }
-
-export default PerfilPage;
