@@ -19,7 +19,7 @@ export class AuthService {
   }
 
   async sendMagicLink(email: string): Promise<void> {
-    const token = this.jwtService.sign({ email }, { expiresIn: '15m' });
+    const token = this.jwtService.sign({ email }, { expiresIn: '1d' });
     this.pendingTokens.set(token, email);
 
     const magicLink = `${this.configService.get('FRONTEND_URL')}/verify?token=${token}`;
