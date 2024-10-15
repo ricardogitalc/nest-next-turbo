@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import LoginButton from "./(auth)/LoginButton";
 import LogoIcon from "./Icons/LogoIcon";
 import { ModeToggle } from "./ModeToggle";
-import { Button } from "./ui/button";
 import { UserButton } from "./UserButton";
 
 export function NavBar() {
@@ -15,10 +15,8 @@ export function NavBar() {
         </Link>
         <div className="flex items-center space-x-4">
           <ModeToggle />
-          <Link href="/login" className="flex items-center space-x-2">
-            <Button variant="default">Login</Button>
-          </Link>
           <UserButton />
+          <LoginButton />
         </div>
       </div>
     </nav>

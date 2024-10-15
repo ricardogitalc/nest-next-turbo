@@ -1,33 +1,13 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useVerifyToken } from "@/hooks/useVerifyToken";
 import { CheckCircle, Loader2, XCircle } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 export default function VerifyPage() {
-  const [verificationStatus, setVerificationStatus] = useState<"verifying" | "success" | "error">("verifying");
-  const router = useRouter();
+  const { verificationStatus, verifyToken } = useVerifyToken();
   const searchParams = useSearchParams();
-
-  const verifyToken = useCallback(
-    async (token: string) => {
-      try {
-        const response = await fetch(`http://localhost:3001/auth/verify?token=${token}`);
-
-        if (response.ok) {
-          setVerificationStatus("success");
-          localStorage.setItem("authToken", token);
-          setTimeout(() => router.push("/"), 3000);
-        } else {
-          setVerificationStatus("error");
-        }
-      } catch (error) {
-        setVerificationStatus("error");
-      }
-    },
-    [router]
-  );
 
   useEffect(() => {
     const token = searchParams.get("token")?.toString();
@@ -40,11 +20,11 @@ export default function VerifyPage() {
   const renderStatusIcon = () => {
     switch (verificationStatus) {
       case "verifying":
-        return <Loader2 className="h-12 w-12 animate-spin text-blue-500" />;
+        return <Loader2 className="h-9 w-9 animate-spin text-blue-500" />;
       case "success":
-        return <CheckCircle className="h-12 w-12 text-green-500" />;
+        return <CheckCircle className="h-9 w-9 text-green-500" />;
       case "error":
-        return <XCircle className="h-12 w-12 text-red-500" />;
+        return <XCircle className="h-9 w-12 text-red-500" />;
     }
   };
 
@@ -53,23 +33,20 @@ export default function VerifyPage() {
       case "verifying":
         return "Verificando seu token...";
       case "success":
-        return "Verificação bem-sucedida! Redirecionando...";
+        return "Verificação concluída.";
       case "error":
-        return "Falha na verificação. Token inválido ou expirado.";
+        return "Falha na verificação,";
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <Card className="w-[350px]">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">Verificação de Token</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col items-center">
+    <div className="flex items-center justify-center min-h-screen min-w-screen">
+      <div className="w-[350px] border p-4 py-6 rounded-lg">
+        <div className="flex items-center justify-center gap-4">
           {renderStatusIcon()}
-          <p className="mt-4 text-center">{renderStatusMessage()}</p>
-        </CardContent>
-      </Card>
+          <h1 className="text-center text-xl">{renderStatusMessage()}</h1>
+        </div>
+      </div>
     </div>
   );
 }

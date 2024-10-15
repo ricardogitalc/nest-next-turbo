@@ -1,5 +1,5 @@
-import { ProfileForm } from "@/components/(auth)/ProfileForm";
-
-export default function ProfilePage() {
-  return <ProfileForm />;
+function PerfilPage() {
+  return <h1>Perfil</h1>;
 }
+
+export default PerfilPage;

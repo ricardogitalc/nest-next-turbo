@@ -16,6 +16,8 @@
 
 # links de referência
 
+turboreppo: https://turbo.build/repo/docs
+react: https://react.dev/learn
 nextjs: https://nextjs.org/docs
 nestjs: https://docs.nestjs.com/
 
@@ -85,3 +87,23 @@ Fluxo de autenticação:
 - Armazenamento do token JWT no localStorage após verificação bem-sucedida.
 
 # Features a serem adicionadas
+
+funcionou, porém ao clicar no link para logar, a ação só ocorre quando dou um refresh da pagina, e não assim que o magic link é clicado
+
+analise todo meu projeto por favor nest-next-turbo
+
+O problema ocorre porque o estado de autenticação não está sendo atualizado imediatamente após o clique no magic link. Para resolver isso, podemos implementar um sistema de gerenciamento de estado global, como o Context API do React ou uma biblioteca como Zustand.
+
+Analisando seu projeto nest-next-turbo, sugiro as seguintes melhorias:
+
+Implemente um AuthContext no frontend para gerenciar o estado de autenticação globalmente.
+
+Atualize o estado de autenticação no AuthContext quando o token for verificado com sucesso na página de verificação.
+
+Use o AuthContext no Navbar e outros componentes que dependem do estado de autenticação.
+
+Considere usar um interceptor HTTP no frontend para adicionar automaticamente o token JWT às requisições autenticadas.
+
+No backend, certifique-se de que o endpoint de verificação do token está retornando as informações necessárias do usuário.
+
+Implementando essas mudanças, o estado de autenticação será atualizado imediatamente após o clique no magic link, sem necessidade de refresh da página.

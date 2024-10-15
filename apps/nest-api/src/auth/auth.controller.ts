@@ -1,16 +1,5 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Patch,
-  Post,
-  Query,
-  Request,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import type { UpdateProfileDto } from './dto/UpdateProfile.dto';
-import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -30,20 +19,5 @@ export class AuthController {
     } else {
       return { message: 'Token inválido' };
     }
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(@Request() req) {
-    return this.authService.getProfile(req.user);
-  }
-
-  @Patch('profile')
-  @UseGuards(JwtAuthGuard)
-  async updateProfile(
-    @Request() req,
-    @Body() updateProfileDto: UpdateProfileDto,
-  ) {
-    return this.authService.updateProfile(req.user.email, updateProfileDto);
   }
 }

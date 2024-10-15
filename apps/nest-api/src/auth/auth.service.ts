@@ -1,12 +1,21 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Resend } from 'resend';
 import { PrismaService } from '../prisma/prisma.service';
-import type { UpdateProfileDto } from './dto/UpdateProfile.dto';
 
 @Injectable()
 export class AuthService {
+  generateJwt(user: {
+    email: string;
+    id: number;
+    name: string | null;
+    emailVerified: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+  }) {
+    throw new Error('Method not implemented.');
+  }
   private resend: Resend;
   private pendingTokens: Map<string, string> = new Map();
 
@@ -19,7 +28,7 @@ export class AuthService {
   }
 
   async sendMagicLink(email: string): Promise<void> {
-    const token = this.jwtService.sign({ email }, { expiresIn: '1d' });
+    const token = this.jwtService.sign({ email }, { expiresIn: '1m' });
     this.pendingTokens.set(token, email);
 
     const magicLink = `${this.configService.get('FRONTEND_URL')}/verify?token=${token}`;
@@ -57,25 +66,5 @@ export class AuthService {
     } catch (error) {
       return null;
     }
-  }
-  async getProfile(user: any) {
-    const userData = await this.prisma.user.findUnique({
-      where: { email: user.email },
-      select: { id: false, email: true, name: true },
-    });
-
-    if (!userData) {
-      throw new NotFoundException('User not found');
-    }
-
-    return userData;
-  }
-
-  async updateProfile(email: string, updateProfileDto: UpdateProfileDto) {
-    const updatedUser = await this.prisma.user.update({
-      where: { email },
-      data: updateProfileDto,
-    });
-    return { message: 'Profile updated successfully' }; //user: updatedUser
   }
 }
