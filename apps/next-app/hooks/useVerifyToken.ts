@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/app/stores/authStore";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 
@@ -14,6 +15,8 @@ export function useVerifyToken() {
 
         if (response.ok) {
           setTimeout(() => setVerificationStatus("success"), 3000);
+          const setIsLoggedIn = useAuthStore.getState().setIsLoggedIn;
+          setIsLoggedIn(true);
           localStorage.setItem("authToken", token);
           setTimeout(() => router.push("/"), 6000);
         } else {

@@ -1,25 +1,22 @@
+import { useAuthStore } from "@/app/stores/authStore";
+import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { DropdownMenuItem } from "../ui/dropdown-menu";
 
 export function LogoutButton() {
   const router = useRouter();
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch("http://localhost:3001/auth/logout", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-        },
-      });
-
-      if (response.ok) {
-        localStorage.removeItem("authToken");
-        router.push("/login");
-      }
-    } catch (error) {
-      console.error("Logout failed", error);
-    }
+  const handleLogout = () => {
+    const setIsLoggedIn = useAuthStore.getState().setIsLoggedIn;
+    setIsLoggedIn(false);
+    localStorage.removeItem("authToken");
+    router.push("/login");
   };
 
-  return <button onClick={handleLogout}>Logout</button>;
+  return (
+    <DropdownMenuItem onClick={handleLogout}>
+      <LogOut className="mr-2 h-4 w-4" />
+      <span>Sair</span>
+    </DropdownMenuItem>
+  );
 }
