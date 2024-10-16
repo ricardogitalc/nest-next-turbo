@@ -6,41 +6,42 @@ import {
   Query,
   Request,
   Res,
-  UnauthorizedException,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
+import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('login')
-  async login(@Body('email') email: string) {
-    await this.authService.sendMagicLink(email);
+  async login(@Body() loginDto: LoginDto) {
+    await this.authService.sendMagicLink(loginDto.email);
     return { message: 'Magic link enviado com sucesso' };
   }
 
+  @Throttle({
+    default: {
+      limit: 1, // 1 Requisição
+      ttl: 60000, // 1 minuto
+    },
+  }) // Definindo limite de requisições
   @Get('verify')
   async verify(
     @Query('token') token: string,
     @Res({ passthrough: true }) response: Response,
   ) {
-    try {
-      const user = await this.authService.verifyMagicLink(token);
-      const jwt = this.authService.generateToken(user);
-
-      response.cookie('jwt', jwt, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 24 * 60 * 60 * 1000, // 1 dia
-      });
-
-      return { message: 'Autenticação bem-sucedida' };
-    } catch (error) {
-      throw new UnauthorizedException('Token inválido ou expirado');
-    }
+    const user = await this.authService.verifyMagicLink(token);
+    const jwt = this.authService.generateToken(user);
+    response.cookie('jwt', jwt, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+    return { message: 'Autenticação bem-sucedida' };
   }
 
   @Get('logged')
@@ -48,10 +49,7 @@ export class AuthController {
     @Request() request: Request & { cookies: { [key: string]: string } },
   ) {
     const token = request.cookies['jwt'];
-    if (!token) {
-      return { isLoggedIn: false };
-    }
-
+    if (!token) return { isLoggedIn: false };
     const isValid = await this.authService.verifyJwtToken(token);
     return { isLoggedIn: isValid };
   }

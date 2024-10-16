@@ -19,7 +19,6 @@ export class AuthService {
   async sendMagicLink(email: string): Promise<void> {
     const token = this.jwtService.sign({ email }, { expiresIn: '10m' });
     const magicLink = `${this.configService.get('BACKEND_URL')}/auth/verify?token=${token}`;
-
     await this.resend.emails.send({
       from: this.configService.get('EMAIL_FROM'),
       to: email,
@@ -32,15 +31,10 @@ export class AuthService {
     try {
       const payload = this.jwtService.verify(token);
       const email = payload.email;
-
       let user = await this.prisma.user.findUnique({ where: { email } });
-
       if (!user) {
-        user = await this.prisma.user.create({
-          data: { email },
-        });
+        user = await this.prisma.user.create({ data: { email } });
       }
-
       return user;
     } catch (error) {
       throw new UnauthorizedException('Token inválido ou expirado');
