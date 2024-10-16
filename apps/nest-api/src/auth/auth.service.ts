@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Resend } from 'resend';
@@ -6,18 +6,7 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
-  generateJwt(user: {
-    email: string;
-    id: number;
-    name: string | null;
-    emailVerified: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-  }) {
-    throw new Error('Method not implemented.');
-  }
   private resend: Resend;
-  private pendingTokens: Map<string, string> = new Map();
 
   constructor(
     private prisma: PrismaService,
@@ -28,10 +17,8 @@ export class AuthService {
   }
 
   async sendMagicLink(email: string): Promise<void> {
-    const token = this.jwtService.sign({ email }, { expiresIn: '1m' });
-    this.pendingTokens.set(token, email);
-
-    const magicLink = `${this.configService.get('FRONTEND_URL')}/verify?token=${token}`;
+    const token = this.jwtService.sign({ email }, { expiresIn: '10m' });
+    const magicLink = `${this.configService.get('BACKEND_URL')}/auth/verify?token=${token}`;
 
     await this.resend.emails.send({
       from: this.configService.get('EMAIL_FROM'),
@@ -41,30 +28,36 @@ export class AuthService {
     });
   }
 
-  async verifyToken(token: string) {
+  async verifyMagicLink(token: string): Promise<any> {
     try {
       const payload = this.jwtService.verify(token);
-      const email = this.pendingTokens.get(token);
+      const email = payload.email;
 
-      if (email && email === payload.email) {
-        this.pendingTokens.delete(token);
-        let user = await this.prisma.user.findUnique({ where: { email } });
+      let user = await this.prisma.user.findUnique({ where: { email } });
 
-        if (!user) {
-          user = await this.prisma.user.create({
-            data: { email, emailVerified: true },
-          });
-        } else if (!user.emailVerified) {
-          user = await this.prisma.user.update({
-            where: { id: user.id },
-            data: { emailVerified: true },
-          });
-        }
-
-        return user;
+      if (!user) {
+        user = await this.prisma.user.create({
+          data: { email },
+        });
       }
+
+      return user;
     } catch (error) {
-      return null;
+      throw new UnauthorizedException('Token inválido ou expirado');
+    }
+  }
+
+  generateToken(user: any): string {
+    const payload = { email: user.email, sub: user.id };
+    return this.jwtService.sign(payload);
+  }
+
+  async verifyJwtToken(token: string): Promise<boolean> {
+    try {
+      await this.jwtService.verifyAsync(token);
+      return true;
+    } catch {
+      return false;
     }
   }
 }
