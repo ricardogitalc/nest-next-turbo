@@ -2,15 +2,18 @@ import {
   Body,
   Controller,
   Get,
+  Patch,
   Post,
   Query,
   Request,
   Res,
+  UseGuards,
 } from '@nestjs/common';
-import { Throttle } from '@nestjs/throttler';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
+import { UpdateUserDto } from './dto/updateUser.dto';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -19,15 +22,16 @@ export class AuthController {
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     await this.authService.sendMagicLink(loginDto.email);
-    return { message: 'Magic link enviado com sucesso' };
+    const token = await this.authService.sendMagicLink(loginDto.email);
+    return { message: 'Magic link enviado com sucesso', token };
   }
 
-  @Throttle({
-    default: {
-      limit: 1, // 1 Requisição
-      ttl: 60000, // 1 minuto
-    },
-  }) // Definindo limite de requisições
+  // @Throttle({
+  //   default: {
+  //     limit: 1,
+  //     ttl: 60000,
+  //   },
+  // })
   @Get('verify')
   async verify(
     @Query('token') token: string,
@@ -44,7 +48,8 @@ export class AuthController {
     return { message: 'Autenticação bem-sucedida' };
   }
 
-  @Get('logged')
+  @UseGuards(JwtAuthGuard)
+  @Get('is-logged')
   async isLoggedIn(
     @Request() request: Request & { cookies: { [key: string]: string } },
   ) {
@@ -54,6 +59,7 @@ export class AuthController {
     return { isLoggedIn: isValid };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('logout')
   logout(@Res({ passthrough: true }) response: Response) {
     response.clearCookie('jwt', {
@@ -62,5 +68,19 @@ export class AuthController {
       sameSite: 'strict',
     });
     return { message: 'Logout realizado com sucesso' };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('get-profile')
+  async getProfile(@Request() req) {
+    const userId = req.user.userId;
+    return this.authService.getUserProfile(userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('update-profile')
+  async updateProfile(@Request() req, @Body() updateUserDto: UpdateUserDto) {
+    const userId = req.user.userId;
+    return this.authService.updateUser(userId, updateUserDto);
   }
 }

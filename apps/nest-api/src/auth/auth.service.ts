@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Resend } from 'resend';
 import { PrismaService } from '../prisma/prisma.service';
+import type { UpdateUserDto } from './dto/updateUser.dto';
 
 @Injectable()
 export class AuthService {
@@ -16,14 +17,15 @@ export class AuthService {
     this.resend = new Resend(this.configService.get('RESEND_API_KEY'));
   }
 
-  async sendMagicLink(email: string): Promise<void> {
+  async sendMagicLink(email: string): Promise<string> {
     const token = this.jwtService.sign({ email }, { expiresIn: '10m' });
     const magicLink = `${this.configService.get('BACKEND_URL')}/auth/verify?token=${token}`;
     await this.resend.emails.send({
       from: this.configService.get('EMAIL_FROM'),
       to: email,
       subject: 'Link para acessar sua conta',
-      html: `<body
+      html: `
+      <body
   style="
     background-color: #d4d2db;
     margin: 0;
@@ -116,6 +118,7 @@ export class AuthService {
 </body>
 `,
     });
+    return token;
   }
 
   async verifyMagicLink(token: string): Promise<any> {
@@ -144,5 +147,26 @@ export class AuthService {
     } catch {
       return false;
     }
+  }
+
+  async getUserProfile(userId: number) {
+    return this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        createdAt: true,
+        updatedAt: true,
+        // Adicione outros campos que deseja retornar
+      },
+    });
+  }
+
+  async updateUser(userId: number, updateUserDto: UpdateUserDto) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { name: updateUserDto.name },
+    });
   }
 }
