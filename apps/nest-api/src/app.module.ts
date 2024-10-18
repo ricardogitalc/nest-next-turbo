@@ -10,7 +10,7 @@ import { PrismaService } from './prisma/prisma.service';
     ThrottlerModule.forRoot([
       {
         ttl: 60000, // 1 minuto
-        limit: 10, // 10 requisições
+        limit: 60, // 60 requisições
       },
     ]),
   ],

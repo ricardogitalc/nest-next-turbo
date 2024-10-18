@@ -32,6 +32,7 @@ export class AuthController {
   //     ttl: 60000,
   //   },
   // })
+
   @Get('verify')
   async verify(
     @Query('token') token: string,
@@ -49,7 +50,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('is-logged')
+  @Get('logged')
   async isLoggedIn(
     @Request() request: Request & { cookies: { [key: string]: string } },
   ) {
@@ -60,7 +61,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('logout')
+  @Get('logout')
   logout(@Res({ passthrough: true }) response: Response) {
     response.clearCookie('jwt', {
       httpOnly: true,
@@ -71,7 +72,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('get-profile')
+  @Get('profile')
   async getProfile(@Request() req) {
     const userId = req.user.userId;
     return this.authService.getUserProfile(userId);

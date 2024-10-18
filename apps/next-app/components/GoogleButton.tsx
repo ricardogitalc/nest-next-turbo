@@ -24,7 +24,7 @@ function GoogleButton() {
         />
         <path d="M1 1h22v22H1z" fill="none" />
       </svg>
-      Sign in with Google
+      Entrar com Google
     </Button>
   );
 }

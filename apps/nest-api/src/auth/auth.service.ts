@@ -81,7 +81,7 @@ export class AuthService {
                 >Fazer login</a
               >
               <p style="color: #848484; font-size: 12px; margin-bottom: 10px">
-                ⏰ Tempo de expiração 24h.
+                ⏰ Expira em 10min.
               </p>
             </td>
           </tr>
@@ -141,12 +141,8 @@ export class AuthService {
   }
 
   async verifyJwtToken(token: string): Promise<boolean> {
-    try {
-      await this.jwtService.verifyAsync(token);
-      return true;
-    } catch {
-      return false;
-    }
+    await this.jwtService.verifyAsync(token);
+    return true;
   }
 
   async getUserProfile(userId: number) {
