@@ -5,10 +5,8 @@ import {
   Patch,
   Post,
   Request,
-  Res,
   UseGuards,
 } from '@nestjs/common';
-import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
@@ -47,22 +45,30 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('logout')
-  logout(@Res({ passthrough: true }) response: Response) {
-    response.clearCookie('jwt', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-    });
-    return { message: 'Logout realizado com sucesso' };
+  @Get('status')
+  async getAuthStatus(@Request() req) {
+    const userId = req.user.userId;
+    const user = await this.authService.getUserProfile(userId);
+    return { isLoggedIn: true, user };
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  async getProfile(@Request() req) {
-    const userId = req.user.userId;
-    return this.authService.getUserProfile(userId);
-  }
+  // @UseGuards(JwtAuthGuard)
+  // @Get('logout')
+  // logout(@Res({ passthrough: true }) response: Response) {
+  //   response.clearCookie('jwt', {
+  //     httpOnly: true,
+  //     secure: process.env.NODE_ENV === 'production',
+  //     sameSite: 'strict',
+  //   });
+  //   return { message: 'Logout realizado com sucesso' };
+  // }
+
+  // @UseGuards(JwtAuthGuard)
+  // @Get('profile')
+  // async getProfile(@Request() req) {
+  //   const userId = req.user.userId;
+  //   return this.authService.getUserProfile(userId);
+  // }
 
   @UseGuards(JwtAuthGuard)
   @Patch('update-profile')

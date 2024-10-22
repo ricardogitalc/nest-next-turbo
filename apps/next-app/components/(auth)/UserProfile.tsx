@@ -6,73 +6,46 @@ import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+function getUserData() {
+  return typeof window !== "undefined" ? window.__USER_DATA__ : null;
+}
 
 export function UserProfile() {
-  const [user, setUser] = useState<{ email: string; name?: string } | null>(null);
+  const [user, setUser] = useState<NonNullable<Window["__USER_DATA__"]>["user"]>(null);
   const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const fetchUserProfile = useCallback(async () => {
-    try {
-      const response = await fetch(`${API_URL}/auth/profile`, {
-        credentials: "include",
-      });
-      const data = await response.json();
-      setUser(data);
-      setName(data.name || "");
-    } catch (error) {
-      console.error("Erro ao buscar perfil:", error);
-      toast({
-        title: "Erro",
-        description: "Falha ao carregar o perfil. Tente novamente.",
-        variant: "destructive",
-      });
-    }
-  }, [toast]);
-
   useEffect(() => {
-    fetchUserProfile();
-  }, [fetchUserProfile]);
+    const userData = getUserData();
+    if (userData?.user) {
+      setUser(userData.user);
+      setName(userData.user.name || "");
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (isLoading) return;
+    if (isLoading || !user || name === user.name) return;
     setIsLoading(true);
 
     try {
-      // Simula um atraso de 3 segundos
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      const response = await fetch(`${API_URL}/auth/update-profile`, {
+      const response = await fetch("http://localhost:3001/auth/update-profile", {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name }),
         credentials: "include",
       });
-
       if (response.ok) {
-        await fetchUserProfile();
         toast({
           title: "Sucesso!",
           description: "Perfil atualizado com sucesso.",
         });
+        setUser((prevUser) => (prevUser ? { ...prevUser, name } : null));
       } else {
-        const errorData = await response.json();
-        if (errorData.message && Array.isArray(errorData.message)) {
-          toast({
-            title: "Erro de validação",
-            description: errorData.message[0],
-            variant: "destructive",
-          });
-        } else {
-          throw new Error("Falha ao atualizar o perfil");
-        }
+        throw new Error("Falha ao atualizar o perfil");
       }
     } catch (error) {
       console.error("Erro ao atualizar perfil:", error);
@@ -86,12 +59,7 @@ export function UserProfile() {
     }
   };
 
-  if (!user)
-    return (
-      <div className="flex justify-center items-start h-screen mt-44">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
+  if (!user) return null;
 
   return (
     <>
@@ -113,7 +81,7 @@ export function UserProfile() {
               </label>
               <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
             </div>
-            <Button className="w-full p-5 mt-2" type="submit" disabled={isLoading}>
+            <Button className="w-full p-5 mt-2" type="submit" disabled={isLoading || name === user.name}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

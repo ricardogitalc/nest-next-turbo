@@ -1,7 +1,5 @@
 "use client";
 
-import { useAuthStore } from "@/app/store/authStore";
-import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import LoginButton from "./(auth)/LoginButton";
@@ -9,17 +7,16 @@ import LogoIcon from "./Icons/LogoIcon";
 import { ModeToggle } from "./ModeToggle";
 import { UserButton } from "./UserButton";
 
+function getUserData() {
+  return typeof window !== "undefined" ? window.__USER_DATA__ : null;
+}
+
 export function NavBar() {
-  const { isLoggedIn, checkAuthStatus } = useAuthStore();
-  const [isLoading, setIsLoading] = useState(true);
+  const [userData, setUserData] = useState<Window["__USER_DATA__"]>(null);
 
   useEffect(() => {
-    const verifyAuth = async () => {
-      await checkAuthStatus();
-      setIsLoading(false);
-    };
-    verifyAuth();
-  }, [checkAuthStatus]);
+    setUserData(getUserData());
+  }, []);
 
   return (
     <nav className="bg-background border-b border-border flex justify-between items-center p-5 w-full">
@@ -28,7 +25,7 @@ export function NavBar() {
           <LogoIcon />
         </Link>
         <div className="flex items-center space-x-4">
-          {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : isLoggedIn ? <UserButton /> : <LoginButton />}
+          {userData?.isLoggedIn ? <UserButton /> : <LoginButton />}
           <ModeToggle />
         </div>
       </div>

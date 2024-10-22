@@ -1,24 +1,24 @@
-import { useAuthStore } from "@/app/store/authStore";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { DropdownMenuItem } from "../ui/dropdown-menu";
 
 export function LogoutButton() {
-  const setIsLoggedIn = useAuthStore((state) => state.setIsLoggedIn);
   const router = useRouter();
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://localhost:3001/auth/logout", {
+      const response = await fetch("/auth/logout", {
         method: "GET",
         credentials: "include",
       });
       if (response.ok) {
-        setIsLoggedIn(false);
+        if (typeof window !== "undefined") {
+          window.__USER_DATA__ = null;
+        }
         router.push("/login");
       }
     } catch (error) {
-      console.error("Erro ao fazer logout:", error);
+      console.error("Error during logout:", error);
     }
   };
 
