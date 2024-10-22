@@ -4,7 +4,6 @@ import {
   Get,
   Patch,
   Post,
-  Query,
   Request,
   Res,
   UseGuards,
@@ -21,32 +20,19 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
-    await this.authService.sendMagicLink(loginDto.email);
     const token = await this.authService.sendMagicLink(loginDto.email);
     return { message: 'Magic link enviado com sucesso', token };
   }
 
-  // @Throttle({
-  //   default: {
-  //     limit: 1,
-  //     ttl: 60000,
-  //   },
-  // })
-
-  @Get('verify')
-  async verify(
-    @Query('token') token: string,
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    const user = await this.authService.verifyMagicLink(token);
-    const jwt = this.authService.generateToken(user);
-    response.cookie('jwt', jwt, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 24 * 60 * 60 * 1000,
-    });
-    return { message: 'Autenticação bem-sucedida' };
+  @Post('verify')
+  async validateToken(@Body('token') token: string) {
+    try {
+      const user = await this.authService.verifyMagicLink(token);
+      const jwt = this.authService.generateToken(user);
+      return { valid: true, jwt };
+    } catch (error) {
+      return { valid: false, message: 'Token inválido ou expirado' };
+    }
   }
 
   @UseGuards(JwtAuthGuard)

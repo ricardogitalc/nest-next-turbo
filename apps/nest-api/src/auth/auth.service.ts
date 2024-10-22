@@ -19,9 +19,9 @@ export class AuthService {
 
   async sendMagicLink(email: string): Promise<string> {
     const token = this.jwtService.sign({ email }, { expiresIn: '10m' });
-    const magicLink = `${this.configService.get('BACKEND_URL')}/auth/verify?token=${token}`;
+    const magicLink = `${this.configService.get('FRONTEND_URL')}/verify?token=${token}`;
     await this.resend.emails.send({
-      from: this.configService.get('EMAIL_FROM'),
+      from: 'Canvaly <onboarding@resend.dev>',
       to: email,
       subject: 'Link para acessar sua conta',
       html: `
